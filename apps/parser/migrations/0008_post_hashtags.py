@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("parser", "0006_telegramchannel_is_verified_and_more"),
+        ("parser", "0007_post_fwd_from_post_mentions"),
     ]
 
     operations = [
