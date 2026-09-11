@@ -83,6 +83,7 @@ class PostSerializer:
             "telegram_message_id": post.telegram_message_id,
             "channel_id": post.channel.id,
             "text": post.text,
+            "hashtags": post.hashtags,
             "published_at": post.published_at.isoformat(),
             "views": post.views,
             "forwards": post.forwards,

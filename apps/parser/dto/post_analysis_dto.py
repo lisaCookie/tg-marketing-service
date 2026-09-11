@@ -16,13 +16,14 @@ class PostDataDTO(BaseModel):
     telegram_message_id: int
     channel_id: int
     text: str
+    hashtags: List[str]
     published_at: str
     views: int
     forwards: int
     comments_count: int
     is_pinned: bool
     media_type: str
-    permalink: str
+    permalink: Optional[str] = None
     reactions: Dict[str, Any]
     post_analysis: PostAnalysisDTO
 

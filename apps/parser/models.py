@@ -268,6 +268,8 @@ class Post(models.Model):
         verbose_name="Текст поста",
     )
 
+    hashtags = models.JSONField(default=list, verbose_name="Хештеги")
+
     published_at = models.DateTimeField(
         db_index=True,
         verbose_name="Время публикации поста",
