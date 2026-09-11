@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -253,6 +254,44 @@ class PostAIAnalysisView(View):
         post_data_dict = PostSerializer.get_post_data(post)
 
         props = PostPagePropsDTO(post=PostDataDTO(**post_data_dict))
+
+        return render_inertia_from_dto(
+            request,
+            "PostPage",
+            props=props,
+        )
+
+
+class PostDetailView(View):
+    """
+    Отображает страницу детального разбора поста.
+    Component: PostPage
+    Props:
+        post (PostDataDTO): Полные данные поста (text, hashtags, метрики)
+        channel (dict): Сводка по каналу, включающая основные параметры.
+        csrfToken (str): CSRF токен для безопасности.
+    URL:
+        /post/<channel_id>/<telegram_message_id>/
+    """
+
+    def get(
+        self, request: HttpRequest, channel_id: int, telegram_message_id: int
+    ) -> HttpResponse:
+        post = get_object_or_404(
+            Post.objects.select_related("channel"),
+            channel_id=channel_id,
+            telegram_message_id=telegram_message_id,
+        )
+
+        post_data_dict = PostSerializer.get_post_data(post)
+
+        post_dto = PostDataDTO(**post_data_dict)
+
+        channel_data = post.channel.get_data()
+
+        props = PostPagePropsDTO(
+            post=post_dto, channel=channel_data, csrfToken=get_token(request)
+        )
 
         return render_inertia_from_dto(
             request,

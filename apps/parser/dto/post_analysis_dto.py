@@ -31,3 +31,5 @@ class PostPagePropsDTO(BaseModel):
     """Обертка для props, которую ожидает Inertia"""
 
     post: PostDataDTO
+    channel: Optional[Dict[str, Any]] = None
+    csrfToken: Optional[str] = None
