@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('parser', '0010_merge_20261011_1239'),
+        ("parser", "0010_merge_20261011_1239"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='postanalysis',
-            name='generated_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Дата последней генерации'),
+            model_name="postanalysis",
+            name="generated_at",
+            field=models.DateTimeField(
+                auto_now=True, verbose_name="Дата последней генерации"
+            ),
         ),
     ]
