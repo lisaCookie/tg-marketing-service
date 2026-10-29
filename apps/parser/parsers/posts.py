@@ -24,6 +24,7 @@ class PostsParser:
         self,
         channel_entity: "Channel",
         channel_model: TelegramChannel,
+        pinned_ids: set[int],
         limit: int = 10,
     ) -> ParsedPostsData:
         """Парсинг постов и реакций."""
@@ -34,8 +35,6 @@ class PostsParser:
         total_comments = 0
         total_reposts = 0
         post_count = 0
-
-        pinned_ids = set(channel_model.pinned_messages or [])
 
         for message in messages[:limit]:
             if message.service:
@@ -56,20 +55,37 @@ class PostsParser:
             current_views = message.views or 0
 
             if message.media:
-                if hasattr(message.media, "document"):
-                    mime = getattr(message.media.document, "mime_type", "")
-                    if mime.startswith("video/"):
-                        media_type = "video"
-                    elif mime.startswith("audio/"):
-                        media_type = "audio"
-                    elif mime.startswith("image/"):
-                        media_type = "image"
-                    else:
-                        media_type = "file"
-                elif hasattr(message.media, "photo"):
+                # Проверка на Photo
+                if hasattr(message.media, "photo"):
                     media_type = "photo"
+
+                # Проверка на Sticker
+                elif hasattr(message.media, "sticker"):
+                    media_type = "sticker"
+
+                # Проверка на Video
+                elif hasattr(message.media, "video") or (
+                    hasattr(message.media, "document")
+                    and getattr(
+                        message.media.document, "mime_type", ""
+                    ).startswith("video/")
+                ):
+                    media_type = "video"
+
+                # Проверка на Document (включая аудио и прочие файлы)
+                elif hasattr(message.media, "document"):
+                    mime = getattr(message.media.document, "mime_type", "")
+                    if mime.startswith("image/"):
+                        media_type = "photo"
+                    elif mime.startswith("video/"):
+                        media_type = "video"
+                    else:
+                        media_type = "document"
+
                 else:
-                    media_type = message.media.__class__.__name__.lower()
+                    media_type = "document"
+            else:
+                media_type = "none"
 
             fwd_from = None
             if message.fwd_from:
